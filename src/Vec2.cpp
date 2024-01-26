@@ -1,5 +1,7 @@
 #include "Vec2.h"
 
+Vec2::Vec2() {}
+
 Vec2::Vec2(float _x, float _y) { x = _x, y = _y; }
 
 bool Vec2::operator==(const Vec2 v) const { return x == v.x && y == v.y; }

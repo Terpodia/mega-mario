@@ -8,6 +8,7 @@ class Vec2 {
    public:
     float x, y;
 
+    Vec2();
     Vec2(float _x, float _y);
 
     bool operator==(const Vec2 v) const;
