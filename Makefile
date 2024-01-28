@@ -16,5 +16,8 @@ $(OUTPUT):$(OBJ_FILES) Makefile
 .cpp.o: 
 		$(CXX) -c $(CXX_FLAGS) $(INCLUDES) $< -o $@
 
+clean:
+		rm -f $(OBJ_FILES) ./bin/mega-mario
+
 run: $(OUTPUT) 
 		cd bin && ./mega-mario && cd ../
