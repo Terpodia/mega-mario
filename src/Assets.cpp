@@ -2,13 +2,25 @@
 
 Assets::Assets() {}
 
-void Assets::addTexture(std::string name, std::string path) {
+void Assets::addTexture(std::string name, std::string path, Vec2 size) {
     sf::Texture texture;
     if (!texture.loadFromFile(path)) {
         std::cerr << "Failed to load file at " << path << "\n";
         exit(-1);
     }
-    m_textures[name] = texture;
+    m_textures[name] = {texture, size};
+}
+
+void Assets::addAnimation(const std::string animName,
+                          const std::string textureName) {
+    m_animations[animName] = Animation(animName, getTexture(textureName));
+}
+
+void Assets::addAnimation(const std::string animName,
+                          const std::string textureName, size_t frameCount,
+                          size_t speed) {
+    m_animations[animName] =
+        Animation(animName, getTexture(textureName), frameCount, speed);
 }
 
 void Assets::addFont(std::string name, std::string path) {
@@ -20,8 +32,10 @@ void Assets::addFont(std::string name, std::string path) {
     m_fonts[name] = font;
 }
 
-const sf::Texture& Assets::getTexture(std::string name) {
-    return m_textures[name];
+const Texture& Assets::getTexture(std::string name) { return m_textures[name]; }
+
+const Animation& Assets::getAnimation(std::string name) {
+    return m_animations[name];
 }
 
 const sf::Font& Assets::getFont(std::string name) { return m_fonts[name]; }
