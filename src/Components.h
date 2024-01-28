@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Vec2.h"
+#include "Animation.h"
 
 class Component {
    public:
@@ -51,4 +52,11 @@ class CGravity : public Component {
     float totalTime = 0;
     CGravity(){}
     CGravity(float _gravity) : gravity(_gravity){}
+};
+
+class CAnimation : public Component {
+   public:
+    Animation m_animation;
+    CAnimation(){}
+    CAnimation(Animation animation) : m_animation(animation){}
 };
