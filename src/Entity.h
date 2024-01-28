@@ -5,7 +5,8 @@
 
 #include "Components.h"
 
-typedef std::tuple<CTransform, CLifeSpan, CInput, CBoundingBox, CGravity, CAnimation>
+typedef std::tuple<CTransform, CLifeSpan, CInput, CBoundingBox, CGravity,
+                   CAnimation>
     ComponentTuple;
 
 class Entity {

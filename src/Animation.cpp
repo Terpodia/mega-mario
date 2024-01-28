@@ -27,7 +27,11 @@ void Animation::update() {
 
     int width = (m_size.x + m_frameCount - 1) / m_frameCount;
 
-    m_sprite.setTextureRect(sf::IntRect(width * curr, 0, width, m_size.y));
+    int sz = width;
+
+    if (width * curr + width > m_size.x) sz = m_size.x - width * curr;
+
+    m_sprite.setTextureRect(sf::IntRect(width * curr, 0, sz, m_size.y));
 
     m_currentFrame++;
 }

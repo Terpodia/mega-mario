@@ -9,7 +9,7 @@ class Animation {
     sf::Sprite m_sprite;
     size_t m_frameCount = 1;
     size_t m_currentFrame = 0;
-    size_t m_speed = 0;
+    size_t m_speed = 1;
     Vec2 m_size = {1, 1};
     std::string m_name = "none";
 

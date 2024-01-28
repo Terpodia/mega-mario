@@ -4,8 +4,8 @@
 #include <iostream>
 #include <map>
 
-#include "Texture.h"
 #include "Animation.h"
+#include "Texture.h"
 #include "Vec2.h"
 
 class Assets {
