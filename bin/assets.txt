@@ -1,7 +1,7 @@
 Texture TexStand ../bin/assets/megaman/stand.png 56 64 
 Texture TexJump ../bin/assets/megaman/jump.png 55 64 
 Texture TexRun ../bin/assets/megaman/run.png 192 64
-Texture TextBullet ../bin/assets/megaman/bullet.png 20 14
+Texture TexBullet ../bin/assets/megaman/bullet.png 20 14
 Texture TexExplosion ../bin/assets/others/explosion.png 640 67
 Texture TexCoin ../bin/assets/others/coin.png 540 68
 Texture TexBigBush ../bin/assets/mario/bigbush.png 288 72
@@ -20,7 +20,7 @@ Texture TexQuestion2 ../bin/assets/mario/question2.png 64 64
 Texture TexSmallBush ../bin/assets/mario/smallbush.png 115 58
 Texture TexSmallCloud ../bin/assets/mario/smallcloud.png 115 86
 Texture TexTallPipe ../bin/assets/mario/tallpipe.png 96 189
-Animation Run TexRun 3 1000
+Animation Run TexRun 3 10
 Animation Coin TexCoin 8 2000
 Animation Explosion TexExplosion 9 2000
 Animation QShade TexQShade 2 2000

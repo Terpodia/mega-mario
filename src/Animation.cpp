@@ -32,6 +32,7 @@ void Animation::update() {
     if (width * curr + width > m_size.x) sz = m_size.x - width * curr;
 
     m_sprite.setTextureRect(sf::IntRect(width * curr, 0, sz, m_size.y));
+    m_sprite.setOrigin(sz/2, m_size.y/2);
 
     m_currentFrame++;
 }
@@ -44,4 +45,6 @@ const std::string& Animation::getName() const { return m_name; }
 
 const Vec2& Animation::getSize() const { return m_size; }
 
-sf::Sprite& Animation::getSprite() { return m_sprite; }
+sf::Sprite& Animation::getSprite() { 
+    return m_sprite; 
+}

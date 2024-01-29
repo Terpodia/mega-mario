@@ -28,8 +28,10 @@ void GameEngine::init(const std::string& path) {
     m_window.create(sf::VideoMode(1920, 1080), "mega mario",
                     sf::Style::Fullscreen);
     
+    m_window.setFramerateLimit(60);
+    
     m_sceneMap["play"] = std::make_shared<Scene_Play>(this, "1");
-    m_currentScene = "play";
+    changeScene("play", m_sceneMap["play"]);
 }
 
 void GameEngine::run() {
@@ -67,7 +69,7 @@ void GameEngine::quit() {
 
 sf::RenderWindow& GameEngine::window() { return m_window; }
 
-const Assets& GameEngine::assets() const { return m_assets; }
+const Assets& GameEngine::assets() { return m_assets; }
 
 const std::shared_ptr<Scene> GameEngine::currentScene() {
     return m_sceneMap[m_currentScene];

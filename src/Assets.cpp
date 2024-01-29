@@ -32,10 +32,26 @@ void Assets::addFont(std::string name, std::string path) {
     m_fonts[name] = font;
 }
 
-const Texture& Assets::getTexture(std::string name) { return m_textures[name]; }
-
-const Animation& Assets::getAnimation(std::string name) {
-    return m_animations[name];
+const Texture& Assets::getTexture(std::string name) const { 
+    if(m_textures.find(name) == m_textures.end()) {
+        std::cerr << "Can not find " << name << " texture\n";
+        exit(-1);
+    }
+    return m_textures.at(name); 
 }
 
-const sf::Font& Assets::getFont(std::string name) { return m_fonts[name]; }
+const Animation& Assets::getAnimation(std::string name) const {
+    if(m_animations.find(name) == m_animations.end()) {
+        std::cerr << "Can not find " << name << " animation\n";
+        exit(-1);
+    }
+    return m_animations.at(name);
+}
+
+const sf::Font& Assets::getFont(std::string name) const { 
+    if(m_fonts.find(name) == m_fonts.end()) {
+        std::cerr << "Can not find " << name << " font\n";
+        exit(-1);
+    }
+    return m_fonts.at(name); 
+}
