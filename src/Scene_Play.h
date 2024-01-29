@@ -24,4 +24,9 @@ class Scene_Play : public Scene {
     void update();
     void sDoAction(const Action& action);
     void sRender();
+    void sAnimation();
+    void sMovement();
+
+    float getPlayerDirection();
+    void flipPlayer();
 };

@@ -25,7 +25,7 @@ class GameEngine {
     void run();
     void quit();
     sf::RenderWindow& window();
-    const Assets& assets() const;
+    const Assets& assets();
     const std::shared_ptr<Scene> currentScene();
     bool isRunning() const;
 };
