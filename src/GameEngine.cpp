@@ -1,4 +1,5 @@
 #include "GameEngine.h"
+#include "Scene_Play.h"
 #include "EntityManager.h"
 #include <fstream>
 
@@ -26,17 +27,14 @@ void GameEngine::init(const std::string& path) {
     }
     m_window.create(sf::VideoMode(1920, 1080), "mega mario",
                     sf::Style::Fullscreen);
+    
+    m_sceneMap["play"] = std::make_shared<Scene_Play>(this, "1");
+    m_currentScene = "play";
 }
 
 void GameEngine::run() {
-    EntityManager manager;
-    auto e = manager.addEntity("player");
-    e->addComponent<CAnimation>(m_assets.getAnimation("Run"));
     while (m_window.isOpen()) {
         update();
-        m_window.draw(e->getComponent<CAnimation>().animation.getSprite());
-        e->getComponent<CAnimation>().animation.update();
-        m_window.display();
     }
 }
 
@@ -44,15 +42,22 @@ void GameEngine::sUserInput() {
     sf::Event event;
     while (m_window.pollEvent(event)) {
         if (event.type == sf::Event::Closed) m_window.close();
-        if (event.type == sf::Event::KeyPressed) {
-            if (event.key.code == sf::Keyboard::Escape) m_window.close();
-        }
+        if(currentScene()->getActionMap().find(event.key.code) == currentScene()->getActionMap().end()) continue;
+
+        const std::string actionType = (event.type == sf::Event::KeyPressed) ? "START" : "END";
+        currentScene()->doAction(Action(currentScene()->getActionMap().at(event.key.code), actionType));
     }
 }
 
 void GameEngine::update() {
-    m_window.clear(sf::Color(0, 87, 217));
     sUserInput();
+    currentScene()->update();
+}
+
+void GameEngine::changeScene(const std::string sceneName, std::shared_ptr<Scene> scene, bool endCurrentScene) {
+    if(endCurrentScene) m_sceneMap.erase(m_currentScene);
+    m_currentScene = sceneName;
+    m_sceneMap[m_currentScene] = scene;
 }
 
 void GameEngine::quit() {
@@ -63,5 +68,9 @@ void GameEngine::quit() {
 sf::RenderWindow& GameEngine::window() { return m_window; }
 
 const Assets& GameEngine::assets() const { return m_assets; }
+
+const std::shared_ptr<Scene> GameEngine::currentScene() {
+    return m_sceneMap[m_currentScene];
+}
 
 bool GameEngine::isRunning() const { return m_running; }
