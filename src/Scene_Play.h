@@ -16,6 +16,7 @@ class Scene_Play : public Scene {
     bool m_drawCollision = false;
     bool m_drawGrid = false;
     const Vec2 m_gridSize = {64, 64};
+    sf::Text m_gridText;
     void init(std::string levelPath);
     void onEnd();
 

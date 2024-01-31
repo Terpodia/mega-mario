@@ -10,11 +10,15 @@ void Scene_Play::init(const std::string levelPath) {
     registerAction(sf::Keyboard::Escape, "Quit");
     registerAction(sf::Keyboard::D, "Right");
     registerAction(sf::Keyboard::A, "Left");
+    registerAction(sf::Keyboard::F, "Draw Grid");
 
     m_player = m_entityManager.addEntity("player");
     m_player->addComponent<CTransform>(Vec2(300, 300));
     m_player->addComponent<CInput>();
     m_player->addComponent<CAnimation>(m_game->assets().getAnimation("Stand"));
+
+    m_gridText.setFont(m_game->assets().getFont("TechFont"));
+    m_gridText.setCharacterSize(12);
 }
 
 void Scene_Play::update() {
@@ -37,6 +41,8 @@ void Scene_Play::sDoAction(const Action& action) {
         else if(action.name() == "Left") {
             m_player->getComponent<CInput>().left = true;
         }
+        else if(action.name() == "Draw Grid")
+            m_drawGrid = !m_drawGrid;
     }
 
     else {
@@ -103,6 +109,13 @@ void Scene_Play::sMovement() {
 
 void Scene_Play::sRender() {
     m_game->window().clear(sf::Color(0, 87, 217));
+
+    auto& pos = m_player->getComponent<CTransform>().pos;
+    float windowCenterX = std::max(width() / 2.0f, pos.x); 
+    sf::View view = m_game->window().getView();
+    view.setCenter(windowCenterX, height() - view.getCenter().y);
+    m_game->window().setView(view);
+
     for(auto e : m_entityManager.getEntities()) {
         if(e->hasComponent<CTransform>() && e->hasComponent<CAnimation>()) {
             auto& animation = e->getComponent<CAnimation>().animation;
@@ -112,6 +125,25 @@ void Scene_Play::sRender() {
             m_game->window().draw(e->getComponent<CAnimation>().animation.getSprite());
         }
     }
+
+    if(m_drawGrid) {
+        float leftX = m_game->window().getView().getCenter().x - width()/2.0;
+        float rightX = leftX + width() + m_gridSize.x;
+        float nextGridX = leftX - ((int)leftX % (int)m_gridSize.x);
+        for(float x = nextGridX; x < rightX; x += m_gridSize.x) 
+            drawLine(Vec2(x, 0), Vec2(x, height()));
+        for(float y = 0; y < height(); y += m_gridSize.y) {
+            drawLine(Vec2(leftX, height() - y), Vec2(rightX, height() - y));
+            for(float x = nextGridX; x < rightX; x += m_gridSize.x) {
+                std::string xCell = std::to_string((int)x/(int)m_gridSize.x);
+                std::string yCell = std::to_string((int)y/(int)m_gridSize.y);
+                m_gridText.setString("(" + xCell + "," + yCell + ")");
+                m_gridText.setPosition(x+3, height() - y - m_gridSize.y + 6);
+                m_game->window().draw(m_gridText);
+            }
+        }
+    }
+
     m_game->window().display();
 }
 
