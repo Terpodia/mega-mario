@@ -7,6 +7,7 @@ Animation::Animation(const std::string name, const Texture& t) {
     m_size = {t.image.getSize().x, t.image.getSize().y};
     m_sprite = sf::Sprite(t.image);
     m_sprite.setScale(t.size.x / m_size.x, t.size.y / m_size.y);
+    m_sprite.setOrigin(m_size.x/2, m_size.y/2);
 }
 
 Animation::Animation(const std::string name, const Texture& t,
@@ -20,6 +21,7 @@ Animation::Animation(const std::string name, const Texture& t,
 
     int width = (m_size.x + m_frameCount - 1) / m_frameCount;
     m_sprite.setTextureRect(sf::IntRect(0, 0, width, m_size.y));
+    m_sprite.setOrigin(width/2, m_size.y/2);
 }
 
 void Animation::update() {

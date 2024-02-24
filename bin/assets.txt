@@ -23,7 +23,7 @@ Texture TexTallPipe ../bin/assets/mario/tallpipe.png 96 189
 Animation Run TexRun 3 10
 Animation Coin TexCoin 8 2000
 Animation Explosion TexExplosion 9 2000
-Animation QShade TexQShade 2 2000
+Animation QShade TexQShade 2 20
 Animation Stand TexStand 1 1
 Animation Jump TexJump 1 1
 Animation Bullet TexBullet 1 1

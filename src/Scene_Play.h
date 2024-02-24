@@ -17,16 +17,23 @@ class Scene_Play : public Scene {
     bool m_drawGrid = false;
     const Vec2 m_gridSize = {64, 64};
     sf::Text m_gridText;
-    void init(std::string levelPath);
+    void init(const std::string& levelPath);
+    
     void onEnd();
 
    public:
-    Scene_Play(GameEngine* gameEngine = nullptr, std::string levelPath = "");
+    Scene_Play(GameEngine* gameEngine, const std::string levelPath);
     void update();
     void sDoAction(const Action& action);
     void sRender();
     void sAnimation();
     void sMovement();
+
+    void mapGridToPixels(int& x, int& y);
+
+    void addPlayer();
+    void addTile(int x, int y, std::string name);
+    void addDecoration(int x, int y, std::string name);
 
     float getPlayerDirection();
     void flipPlayer();

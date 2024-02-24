@@ -30,7 +30,7 @@ void GameEngine::init(const std::string& path) {
     
     m_window.setFramerateLimit(60);
     
-    m_sceneMap["play"] = std::make_shared<Scene_Play>(this, "1");
+    m_sceneMap["play"] = std::make_shared<Scene_Play>(this, "../bin/level1.txt");
     changeScene("play", m_sceneMap["play"]);
 }
 

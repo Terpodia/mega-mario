@@ -1,0 +1,6 @@
+Tile QShade 0 0 
+Tile Brick 0 1
+Tile Brick 2 1
+Dec BigCloud 10 13
+Player 4 10 32 32 7 40 20 2 Bullet
+
