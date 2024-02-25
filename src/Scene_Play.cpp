@@ -4,6 +4,8 @@
 
 #include "GameEngine.h"
 
+#include "Physics.h"
+
 Scene_Play::Scene_Play(GameEngine* gameEngine, std::string levelPath) {
   m_game = gameEngine;
   init(levelPath);
@@ -14,6 +16,7 @@ void Scene_Play::init(const std::string& levelPath) {
   registerAction(sf::Keyboard::D, "Right");
   registerAction(sf::Keyboard::A, "Left");
   registerAction(sf::Keyboard::F, "Draw Grid");
+  registerAction(sf::Keyboard::J, "Draw Collision");
 
   m_gridText.setFont(m_game->assets().getFont("TechFont"));
   m_gridText.setCharacterSize(12);
@@ -68,8 +71,8 @@ void Scene_Play::addTile(int x, int y, std::string name) {
 
   tile->addComponent<CTransform>(Vec2(x, y));
 
-  float cx = anim.animation.getSize().x * sprite.getScale().x;
-  float cy = anim.animation.getSize().y * sprite.getScale().y;
+  float cx = sprite.getOrigin().x * sprite.getScale().x * 2.0;
+  float cy = sprite.getOrigin().y * sprite.getScale().y * 2.0;
 
   tile->addComponent<CBoundingBox>(Vec2(cx, cy));
 }
@@ -95,6 +98,7 @@ void Scene_Play::update() {
   m_entityManager.update();
   sAnimation();
   sMovement();
+  sCollision();
   sRender();
 }
 
@@ -111,6 +115,8 @@ void Scene_Play::sDoAction(const Action& action) {
       m_player->getComponent<CInput>().left = true;
     } else if (action.name() == "Draw Grid")
       m_drawGrid = !m_drawGrid;
+    else if (action.name() == "Draw Collision")
+      m_drawCollision = !m_drawCollision;
   }
 
   else {
@@ -178,6 +184,26 @@ void Scene_Play::sMovement() {
   }
 }
 
+void Scene_Play::sCollision() {
+  for(auto& e : m_entityManager.getEntities("tile")) {
+    Vec2 overlap = Physics::GetOverlap(m_player, e);
+    Vec2 prevOverlap = Physics::GetPreviousOverlap(m_player, e);
+    Vec2& playerPos = m_player->getComponent<CTransform>().pos;
+    Vec2& tilePos = e->getComponent<CTransform>().pos;
+
+    if(overlap.x <= 0 || overlap.y <= 0) continue;
+
+    if(prevOverlap.x > 0) {
+      if(playerPos.y > tilePos.y) playerPos.y += overlap.y+1;
+      else playerPos.y -= overlap.y+1;
+    }
+    else {
+      if(playerPos.x > tilePos.x) playerPos.x += overlap.x+1;
+      else playerPos.x -= overlap.x+1;
+    }
+  }
+}
+
 void Scene_Play::sRender() {
   m_game->window().clear(sf::Color(0, 87, 217));
 
@@ -213,6 +239,22 @@ void Scene_Play::sRender() {
         m_gridText.setPosition(x + 3, height() - y - m_gridSize.y + 6);
         m_game->window().draw(m_gridText);
       }
+    }
+  }
+
+  if(m_drawCollision) {
+    for(auto& e : m_entityManager.getEntities()) {
+      if (!e->hasComponent<CBoundingBox>()) continue;
+      auto & box = e->getComponent<CBoundingBox>();
+      auto & transform = e->getComponent<CTransform>();
+      sf::RectangleShape rect;
+      rect.setSize(sf::Vector2f(box.size.x, box.size.y));
+      rect.setOrigin(box.halfSize.x, box.halfSize.y);
+      rect.setPosition(transform.pos.x, transform.pos.y);
+      rect.setFillColor(sf::Color(0,0,0,0));
+      rect.setOutlineColor(sf::Color(255, 255, 255, 255));
+      rect.setOutlineThickness(1);
+      m_game->window().draw(rect);
     }
   }
 
