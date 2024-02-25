@@ -28,6 +28,7 @@ class Scene_Play : public Scene {
     void sRender();
     void sAnimation();
     void sMovement();
+    void sCollision();
 
     void mapGridToPixels(int& x, int& y);
 

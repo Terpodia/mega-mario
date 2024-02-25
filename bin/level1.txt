@@ -2,5 +2,7 @@ Tile QShade 0 0
 Tile Brick 0 1
 Tile Brick 2 1
 Dec BigCloud 10 13
-Player 4 10 32 32 7 40 20 2 Bullet
+Player 4 10 64 64 7 40 20 2 Bullet
+Tile QShade 10 10 
+Tile Brick 0 10
 
