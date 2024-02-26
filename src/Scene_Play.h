@@ -15,6 +15,9 @@ class Scene_Play : public Scene {
     bool m_drawTextures = true;
     bool m_drawCollision = false;
     bool m_drawGrid = false;
+
+    bool m_playerIsInGround = false;
+
     const Vec2 m_gridSize = {64, 64};
     sf::Text m_gridText;
     void init(const std::string& levelPath);
@@ -38,4 +41,5 @@ class Scene_Play : public Scene {
 
     float getPlayerDirection();
     void flipPlayer();
+    void playerMovement();
 };
