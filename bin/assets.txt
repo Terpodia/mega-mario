@@ -1,5 +1,5 @@
 Texture TexStand ../bin/assets/megaman/stand.png 56 64 
-Texture TexJump ../bin/assets/megaman/jump.png 55 64 
+Texture TexJump ../bin/assets/megaman/jump.png 66 76 
 Texture TexRun ../bin/assets/megaman/run.png 192 64
 Texture TexBullet ../bin/assets/megaman/bullet.png 20 14
 Texture TexExplosion ../bin/assets/others/explosion.png 640 67
@@ -14,7 +14,7 @@ Texture TexFlag ../bin/assets/mario/flag.png 64 64
 Texture TexFlagPole ../bin/assets/mario/flagpole.png 10 64
 Texture TexFlagTop ../bin/assets/mario/flagtop.png 28 36
 Texture TexGround ../bin/assets/mario/ground.png 64 64
-Texture TexQShade ../bin/assets/mario/qshade.png 132 64
+Texture TexQShade ../bin/assets/mario/qshade.png 130 64
 Texture TexQuestion1 ../bin/assets/mario/question1.png 64 64
 Texture TexQuestion2 ../bin/assets/mario/question2.png 64 64
 Texture TexSmallBush ../bin/assets/mario/smallbush.png 115 58
