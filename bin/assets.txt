@@ -21,8 +21,8 @@ Texture TexSmallBush ../bin/assets/mario/smallbush.png 115 58
 Texture TexSmallCloud ../bin/assets/mario/smallcloud.png 115 86
 Texture TexTallPipe ../bin/assets/mario/tallpipe.png 96 189
 Animation Run TexRun 3 10
-Animation Coin TexCoin 8 2000
-Animation Explosion TexExplosion 9 2000
+Animation Coin TexCoin 8 20
+Animation Explosion TexExplosion 9 5
 Animation QShade TexQShade 2 20
 Animation Stand TexStand 1 1
 Animation Jump TexJump 1 1

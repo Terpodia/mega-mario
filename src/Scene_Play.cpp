@@ -1,7 +1,9 @@
 #include "Scene_Play.h"
 
+#include <csignal>
 #include <fstream>
 
+#include "Components.h"
 #include "GameEngine.h"
 #include "Physics.h"
 #include "Scene_Menu.h"
@@ -15,7 +17,8 @@ void Scene_Play::init(const std::string &levelPath) {
   registerAction(sf::Keyboard::Escape, "Quit");
   registerAction(sf::Keyboard::D, "Right");
   registerAction(sf::Keyboard::A, "Left");
-  registerAction(sf::Keyboard::Space, "Jump");
+  registerAction(sf::Keyboard::W, "Jump");
+  registerAction(sf::Keyboard::Space, "Shoot");
   registerAction(sf::Keyboard::F, "Draw Grid");
   registerAction(sf::Keyboard::J, "Draw Collision");
 
@@ -103,6 +106,7 @@ void Scene_Play::update() {
   sAnimation();
   sMovement();
   sCollision();
+  sLifeSpan();
   sRender();
 }
 
@@ -141,7 +145,28 @@ void Scene_Play::sDoAction(const Action &action) {
 
     else if (action.name() == "Jump")
       m_player->getComponent<CInput>().up = false;
+
+    else if (action.name() == "Shoot")
+      Shoot();
   }
+}
+
+void Scene_Play::Shoot() {
+  auto bullet = m_entityManager.addEntity("bullet");
+  auto playerTransform = m_player->getComponent<CTransform>();
+  bullet->addComponent<CTransform>(
+      playerTransform.pos,
+      Vec2(m_playerConfing.SPEED * getPlayerDirection() * 2, 0));
+  bullet->addComponent<CAnimation>(m_game->assets().getAnimation("Bullet"));
+
+  auto sprite = bullet->getComponent<CAnimation>().animation.getSprite();
+
+  float cx = sprite.getOrigin().x * sprite.getScale().x * 2.0;
+  float cy = sprite.getOrigin().y * sprite.getScale().y * 2.0;
+
+  bullet->addComponent<CBoundingBox>(Vec2(cx, cy));
+
+  bullet->addComponent<CLifeSpan>(60);
 }
 
 float Scene_Play::getPlayerDirection() {
@@ -174,10 +199,22 @@ void Scene_Play::sAnimation() {
 
   auto spriteScale = anim.animation.getSprite().getScale();
   anim.animation.getSprite().setScale(abs(spriteScale.x) * flip, spriteScale.y);
-  if (input.right && flip < 0)
-    flipPlayer();
-  else if (input.left && flip > 0)
-    flipPlayer();
+  if (input.right) {
+    if (flip < 0)
+      flipPlayer();
+  } else if (input.left) {
+    if (flip > 0)
+      flipPlayer();
+  }
+
+  for (auto &e : m_entityManager.getEntities()) {
+    if (e->hasComponent<CAnimation>()) {
+      auto &anim = e->getComponent<CAnimation>();
+      anim.animation.update();
+      if (!anim.loop && anim.animation.hasEnded())
+        e->destroy();
+    }
+  }
 }
 
 void Scene_Play::playerMovement() {
@@ -188,7 +225,7 @@ void Scene_Play::playerMovement() {
   Vec2 in(0, 0), grav(0, 0);
   if (input.right)
     in.x++;
-  if (input.left)
+  else if (input.left)
     in.x--;
 
   if (input.up)
@@ -242,23 +279,54 @@ void Scene_Play::sCollision() {
     if (prevOverlap.x >= 0 && overlap.y >= -1) {
       if (playerPos.y < tilePos.y)
         m_playerIsInGround = true;
-      else
-        m_player->getComponent<CInput>().up = false;
     }
 
     if (overlap.x < 0 || overlap.y < 0)
       continue;
 
     if (prevOverlap.x >= 0) {
-      if (playerPos.y > tilePos.y)
+      if (playerPos.y > tilePos.y) {
         playerPos.y += overlap.y + 1;
-      else
+        m_player->getComponent<CInput>().up = false;
+
+        if (e->getComponent<CAnimation>().animation.getName() == "Brick") {
+          e->destroy();
+          spawnExplosion(tilePos);
+        }
+      } else
         playerPos.y -= overlap.y + 1;
     } else {
       if (playerPos.x > tilePos.x)
         playerPos.x += overlap.x + 1;
       else
         playerPos.x -= overlap.x + 1;
+    }
+  }
+  for (auto &bullet : m_entityManager.getEntities("bullet")) {
+    for (auto &e : m_entityManager.getEntities("tile")) {
+      Vec2 overlap = Physics::GetOverlap(bullet, e);
+      Vec2 prevOverlap = Physics::GetPreviousOverlap(bullet, e);
+      Vec2 &bulletPos = bullet->getComponent<CTransform>().pos;
+      Vec2 &tilePos = e->getComponent<CTransform>().pos;
+
+      if (overlap.x < 0 || overlap.y < 0)
+        continue;
+
+      bullet->destroy();
+      if (e->getComponent<CAnimation>().animation.getName() == "Brick") {
+        e->destroy();
+        spawnExplosion(tilePos);
+      }
+    }
+  }
+}
+
+void Scene_Play::sLifeSpan() {
+  for (auto &e : m_entityManager.getEntities()) {
+    if (e->hasComponent<CLifeSpan>()) {
+      e->getComponent<CLifeSpan>().remaining--;
+      if (e->getComponent<CLifeSpan>().remaining == 0)
+        e->destroy();
     }
   }
 }
@@ -276,7 +344,6 @@ void Scene_Play::sRender() {
     if (e->hasComponent<CTransform>() && e->hasComponent<CAnimation>()) {
       auto &animation = e->getComponent<CAnimation>().animation;
       auto &transform = e->getComponent<CTransform>();
-      animation.update();
       animation.getSprite().setPosition(transform.pos.x, transform.pos.y);
       m_game->window().draw(
           e->getComponent<CAnimation>().animation.getSprite());
@@ -324,6 +391,13 @@ void Scene_Play::sRender() {
 void Scene_Play::mapGridToPixels(int &x, int &y) {
   x *= m_gridSize.x;
   y = m_game->window().getSize().y - m_gridSize.y * y;
+}
+
+void Scene_Play::spawnExplosion(Vec2 pos) {
+  auto e = m_entityManager.addEntity("explosion");
+  e->addComponent<CTransform>(pos);
+  e->addComponent<CAnimation>(m_game->assets().getAnimation("Explosion"),
+                              false);
 }
 
 void Scene_Play::onEnd() {
