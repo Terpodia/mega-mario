@@ -122,4 +122,4 @@ Tile Brick 52 10
 
 Tile BigPipe 4 1
 
-Player 4 10 45 64 5 40 23 10 Bullet
+Player 4 10 45 60 5 40 23 10 Bullet
