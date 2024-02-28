@@ -263,6 +263,7 @@ void Scene_Play::sMovement() {
       auto &transform = e->getComponent<CTransform>();
       transform.prevPos = transform.pos;
       transform.pos += transform.velocity;
+      transform.pos.x = std::max((float)0, transform.pos.x);
     }
   }
 }
@@ -292,6 +293,11 @@ void Scene_Play::sCollision() {
         if (e->getComponent<CAnimation>().animation.getName() == "Brick") {
           e->destroy();
           spawnExplosion(tilePos);
+        } else if (e->getComponent<CAnimation>().animation.getName() ==
+                   "QShade") {
+          e->getComponent<CAnimation>().animation =
+              m_game->assets().getAnimation("Question2");
+          spawnCoin(tilePos);
         }
       } else
         playerPos.y -= overlap.y + 1;
@@ -398,6 +404,13 @@ void Scene_Play::spawnExplosion(Vec2 pos) {
   e->addComponent<CTransform>(pos);
   e->addComponent<CAnimation>(m_game->assets().getAnimation("Explosion"),
                               false);
+}
+
+void Scene_Play::spawnCoin(Vec2 pos) {
+  auto e = m_entityManager.addEntity("coin");
+  e->addComponent<CTransform>(Vec2(pos.x, pos.y - 64));
+  e->addComponent<CAnimation>(m_game->assets().getAnimation("Coin"), true);
+  e->addComponent<CLifeSpan>(30);
 }
 
 void Scene_Play::onEnd() {
