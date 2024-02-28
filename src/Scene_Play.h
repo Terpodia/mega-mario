@@ -46,4 +46,5 @@ public:
   void Shoot();
 
   void spawnExplosion(Vec2 pos);
+  void spawnCoin(Vec2 pos);
 };
