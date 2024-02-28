@@ -1,6 +1,5 @@
 #include "Scene_Play.h"
 
-#include <csignal>
 #include <fstream>
 
 #include "Components.h"
@@ -21,11 +20,14 @@ void Scene_Play::init(const std::string &levelPath) {
   registerAction(sf::Keyboard::Space, "Shoot");
   registerAction(sf::Keyboard::F, "Draw Grid");
   registerAction(sf::Keyboard::J, "Draw Collision");
+  registerAction(sf::Keyboard::P, "Pause");
 
   m_gridText.setFont(m_game->assets().getFont("TechFont"));
   m_gridText.setCharacterSize(12);
 
   m_currentFrame = 0;
+
+  m_levelPath = levelPath;
 
   std::ifstream fin(levelPath);
   std::string type;
@@ -103,11 +105,14 @@ void Scene_Play::addPlayer() {
 
 void Scene_Play::update() {
   m_entityManager.update();
-  sAnimation();
-  sMovement();
-  sCollision();
-  sLifeSpan();
+  if (!m_paused) {
+    sAnimation();
+    sMovement();
+    sCollision();
+    sLifeSpan();
+  }
   sRender();
+  m_currentFrame++;
 }
 
 void Scene_Play::sDoAction(const Action &action) {
@@ -127,13 +132,14 @@ void Scene_Play::sDoAction(const Action &action) {
       if (m_playerIsInGround) {
         m_player->getComponent<CInput>().up = true;
       }
-    }
-
-    else if (action.name() == "Draw Grid")
+    } else if (action.name() == "Draw Grid")
       m_drawGrid = !m_drawGrid;
 
     else if (action.name() == "Draw Collision")
       m_drawCollision = !m_drawCollision;
+
+    else if (action.name() == "Pause")
+      m_paused = !m_paused;
   }
 
   else {
@@ -285,16 +291,19 @@ void Scene_Play::sCollision() {
     if (overlap.x < 0 || overlap.y < 0)
       continue;
 
+    std::string tileName = e->getComponent<CAnimation>().animation.getName();
+    if (tileName == "Flag" || tileName == "FlagPole")
+      resetLevel();
+
     if (prevOverlap.x >= 0) {
       if (playerPos.y > tilePos.y) {
         playerPos.y += overlap.y + 1;
         m_player->getComponent<CInput>().up = false;
 
-        if (e->getComponent<CAnimation>().animation.getName() == "Brick") {
+        if (tileName == "Brick") {
           e->destroy();
           spawnExplosion(tilePos);
-        } else if (e->getComponent<CAnimation>().animation.getName() ==
-                   "QShade") {
+        } else if (tileName == "QShade") {
           e->getComponent<CAnimation>().animation =
               m_game->assets().getAnimation("Question2");
           spawnCoin(tilePos);
@@ -325,6 +334,8 @@ void Scene_Play::sCollision() {
       }
     }
   }
+  if (m_player->getComponent<CTransform>().pos.y > height())
+    resetLevel();
 }
 
 void Scene_Play::sLifeSpan() {
@@ -411,6 +422,13 @@ void Scene_Play::spawnCoin(Vec2 pos) {
   e->addComponent<CTransform>(Vec2(pos.x, pos.y - 64));
   e->addComponent<CAnimation>(m_game->assets().getAnimation("Coin"), true);
   e->addComponent<CLifeSpan>(30);
+}
+
+void Scene_Play::resetLevel() {
+  for (auto &e : m_entityManager.getEntities()) {
+    e->destroy();
+  }
+  init(m_levelPath);
 }
 
 void Scene_Play::onEnd() {

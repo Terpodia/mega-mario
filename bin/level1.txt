@@ -63,18 +63,18 @@ Tile Ground 58 0
 Tile Ground 59 0
 Tile Ground 60 0
 
-Tile Flag 56 10
-Tile FlagPole 57 10
-Tile FlagPole 57 9
-Tile FlagPole 57 8
-Tile FlagPole 57 7
-Tile FlagPole 57 6
-Tile FlagPole 57 5
-Tile FlagPole 57 4
-Tile FlagPole 57 3
-Tile FlagPole 57 2
-Tile Block 56 1
-Tile Block 57 1
+Tile Flag 60 10
+Tile FlagPole 61 10
+Tile FlagPole 61 9
+Tile FlagPole 61 8
+Tile FlagPole 61 7
+Tile FlagPole 61 6
+Tile FlagPole 61 5
+Tile FlagPole 61 4
+Tile FlagPole 61 3
+Tile FlagPole 61 2
+Tile Block 60 1
+Tile Block 61 1
 
 Tile QShade 8 4
 Tile Brick 9 4
